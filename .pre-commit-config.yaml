@@ -1,0 +1,20 @@
+default_install_hook_types: ["pre-push", "pre-commit"]
+repos:
+  - repo: https://github.com/returntocorp/semgrep
+    rev: "v1.41.0"
+    hooks:
+      - id: semgrep
+        name: semgrep-all-rules-diff-scan
+        stages: ["commit"]
+        verbose: true
+        entry: sh -c 'semgrep scan --config=auto --baseline-commit HEAD'
+        # entry: sh -c 'env SEMGREP_BRANCH="$(git config --get remote.origin.url)/$(git rev-parse --abbrev-ref HEAD)" SEMGREP_REPO_NAME="pre-commit-full" semgrep ci --baseline-commit HEAD'
+        pass_filenames: false
+        language: system
+      - id: semgrep
+        name: semgrep-full-scan
+        stages: ["push"]
+        verbose: true
+        entry: sh -c 'env SEMGREP_BRANCH="$(git config --get remote.origin.url)/$(git rev-parse --abbrev-ref HEAD)" SEMGREP_REPO_NAME="pre-commit-full" semgrep ci --code'
+        pass_filenames: false
+        language: system
